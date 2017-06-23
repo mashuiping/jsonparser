@@ -110,6 +110,23 @@ class JsonParser(object):
         else:
             raise ValueError("PARSE_INVALID_VALUE")
 
+    def __json_parse_array(self, json_string):
+        array_to_parse = []
+        json_string = json_string[1:].strip()
+        if json_string[0] == ']':
+            return self.PARSE_OK, json_string, array_to_parse
+        while True:
+            json_return_status, json_string, value = self.__json_parse_value(json_string)
+            array_to_parse.append(value)
+            json_string.strip()
+            if json_string[0] == ',':
+                json_string = json_string[1:].strip()
+            elif json_string[0] == ']':
+                json_string = json_string[1:]
+                return self.PARSE_OK, json_string, array_to_parse
+            else:
+                raise ValueError("解析数组时出现错误")
+
     def __json_parse_value(self, json_string):
         # 可能是null
         if json_string[0] == 'n':
@@ -126,6 +143,8 @@ class JsonParser(object):
         # 可能是字符串
         elif json_string[0] == '\"':
             return self.__json_parse_string(json_string)
+        elif json_string[0] == '[':
+            return self.__json_parse_array(json_string)
         else:
             raise ValueError("不认识的开头")
 
