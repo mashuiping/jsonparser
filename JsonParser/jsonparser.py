@@ -21,6 +21,8 @@ class JsonParser(object):
         self.PARSE_OK = 0
         self.PARSE_INVALID_VALUE = 1
         self.logger = JsonParseLogger()
+        self.valid_number_symbol_front = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-')
+        self.valid_number_symbol_behind = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', 'E', 'e', '.')
 
     def __json_parse_true(self, json_string):
         if json_string != 'true':
@@ -49,6 +51,32 @@ class JsonParser(object):
             json_string = json_string[4:]
             return self.PARSE_OK, json_string, 'null'
 
+    def __json_parse_number(self, json_string):
+        isfloat_flag = False
+        index = 0
+        for index, elem in enumerate(json_string):
+            if elem == '.':
+                isfloat_flag = True
+            if elem not in self.valid_number_symbol_behind:
+                break
+        # 最后跳出来可能是循环结束，也可能是break跳出
+        # break跳出说明最后一位不是合法数字字符 循环自动结束说明
+        # 最后一位是合法字符，这样跳出需要+1才能包含合法的最后一位
+        if json_string[index] in json_string(json_string):
+            index += 1
+        if isfloat_flag:
+            try:
+                value = float(json_string[:index])
+            except ValueError:
+                raise ValueError("float转换错误")
+        else:
+            try:
+                value = int(json_string[:index])
+            except ValueError:
+                raise ValueError("int转换错误")
+        json_string = json_string[index:]
+        return self.PARSE_OK, json_string, value
+
     def __json_parse_value(self, json_string):
         if json_string[0] == 'n':
             return self.__json_parse_null(json_string)
@@ -56,6 +84,8 @@ class JsonParser(object):
             return self.__json_parse_true(json_string)
         elif json_string[0] == 'f':
             return self.__json_parse_false(json_string)
+        elif json_string[0] in self.valid_number_symbol_front:
+            return self.__json_parse_number(json_string)
         else:
             return self.PARSE_INVALID_VALUE, json_string, ""
 
