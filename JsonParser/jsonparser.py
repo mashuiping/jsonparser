@@ -1,7 +1,6 @@
 # coding: utf-8
 from log.jsonparse_logger import JsonParseLogger
 
-
 class JsonParser(object):
     """
     基于Python2.7封装实现一个可重用的Json解析类
@@ -84,11 +83,12 @@ class JsonParser(object):
 
     def __json_parse_string(self, json_string):
         is_valid_string = False
+        valid_escape_symbol = ('"', '\\', '/', 'b', 'f', 'n', 'r', 't')
         index = 0
         string_len = len(json_string)
         # 寻找第二个引号(能进到这个函数说明第一个引号就在第一个位置)，即找到字符串的结尾位置
         for index in range(1, string_len):
-            if json_string[index] == '"':
+            if json_string[index] == '"' and json_string[index-1] != '\\':
                 is_valid_string = True
                 break
             elif json_string[index] == '\\':
@@ -101,8 +101,11 @@ class JsonParser(object):
                         json_string = json_string_copy + json_string[index+6:]
                         # json_string[index+4:] = json_string[index+6:]
                     index += 5
-                else:
+                elif json_string[index+1] in valid_escape_symbol:
                     index += 1
+                else:
+                    continue
+
         if is_valid_string is True:
             value = json_string[:index+1]
             json_string = json_string[index+1:]
@@ -134,7 +137,6 @@ class JsonParser(object):
                 raise ValueError("解析数组时出现错误")
             
     def __json_parse_object(self, json_string):
-        dict_to_parse = {}
         dict_key = []
         dict_value = []
         side_flag = True
@@ -147,6 +149,8 @@ class JsonParser(object):
             if json_string == '':
                 raise ValueError("找不到下一个}")
             if side_flag is True:
+                if not isinstance(value, unicode):
+                    raise ValueError("key值不是字符串")
                 dict_key.append(value)
             else:
                 dict_value.append(value)
@@ -163,7 +167,6 @@ class JsonParser(object):
                 side_flag = True
             else:
                 raise ValueError("解析对象时出现错误")
-
 
 
     def __json_parse_value(self, json_string):
@@ -206,7 +209,6 @@ class JsonParser(object):
             json_string_copy += element
         json_string_copy = json_string_copy.strip()
         parse_status, json_string_copy, value = self.__json_parse_value(json_string_copy)
-        print json_string
         self.logger.debug("{}:{}".format(u"成功解析了字符串".encode('utf-8'), json_string.encode('utf-8')))
         self._data = value
 
