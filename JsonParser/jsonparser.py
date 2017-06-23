@@ -82,17 +82,44 @@ class JsonParser(object):
         json_string = json_string[index:]
         return self.PARSE_OK, json_string, value
 
+    def __json_parse_string(self, json_string):
+        is_valid_string = False
+        index = 0
+        for index in range(0, len(json_string)):
+            if json_string[index] == '"':
+                is_valid_string = True
+                break
+            elif json_string[index] == '\\':
+                if json_string[index+1] == 'u':
+                    index += 4
+                else:
+                    index += 1
+        if is_valid_string is True:
+            value = json_string[1:index+1]
+            json_string = json_string[index+2]
+            return self.PARSE_OK, json_string, value
+        else:
+            raise ValueError("PARSE_INVALID_VALUE")
+
     def __json_parse_value(self, json_string):
+        # 可能是null
         if json_string[0] == 'n':
             return self.__json_parse_null(json_string)
+        # 可能是true
         elif json_string[0] == 't':
             return self.__json_parse_true(json_string)
+        # 可能是false
         elif json_string[0] == 'f':
             return self.__json_parse_false(json_string)
+        # 可能是数字
         elif json_string[0] in self.valid_number_symbol_front:
             return self.__json_parse_number(json_string)
+        # 可能是字符串
+        elif json_string[0] == '\"':
+            return self.__json_parse_string(json_string)
         else:
             raise ValueError("不认识的开头")
+
 
     def loads(self, json_string):
         """
@@ -113,7 +140,6 @@ class JsonParser(object):
         parse_status, json_string_copy, value = self.__json_parse_value(json_string_copy)
         self.logger.debug(parse_status)
         self._data = value
-
 
     def dumps(self):
         """
