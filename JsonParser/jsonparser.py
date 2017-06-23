@@ -26,22 +26,28 @@ class JsonParser(object):
         if json_string != 'true':
             raise ValueError("首字母t是却不是true")
         else:
+            if len(json_string) < 4:
+                raise ValueError("字面值不足true的长度")
             json_string = json_string[4:]
-            return self.PARSE_OK, json_string
+            return self.PARSE_OK, json_string, 'true'
 
     def __json_parse_false(self, json_string):
         if json_string != 'false':
             raise ValueError("首字母f是却不是false")
         else:
+            if len(json_string) < 5:
+                raise ValueError("字面值不足false的长度")
             json_string = json_string[5:]
-            return self.PARSE_OK, json_string
+            return self.PARSE_OK, json_string, 'false'
 
     def __json_parse_null(self, json_string):
         if json_string != 'null':
             raise ValueError("首字母n是却不是null")
         else:
+            if len(json_string) < 4:
+                raise ValueError("字面值不足null的长度")
             json_string = json_string[4:]
-            return self.PARSE_OK, json_string
+            return self.PARSE_OK, json_string, 'null'
 
     def __json_parse_value(self, json_string):
         if json_string[0] == 'n':
@@ -68,7 +74,7 @@ class JsonParser(object):
         json_string_copy = ""
         for element in json_string:
             json_string_copy += element
-        json_string_copy.strip()
+        json_string_copy = json_string_copy.strip()
         parse_status, json_string_copy, value = self.__json_parse_value(json_string_copy)
         self.logger.debug(parse_status)
         self._data = value
