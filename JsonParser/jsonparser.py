@@ -26,7 +26,7 @@ class JsonParser(object):
         self.float_symbol = ('e', 'E', '.')
 
     def __json_parse_true(self, json_string):
-        if json_string != 'true':
+        if json_string[:4] != u'true':
             raise ValueError("首字母t是却不是true")
         else:
             if len(json_string) < 4:
@@ -35,7 +35,7 @@ class JsonParser(object):
             return self.PARSE_OK, json_string, 'true'
 
     def __json_parse_false(self, json_string):
-        if json_string != 'false':
+        if json_string[:5] != u'false':
             raise ValueError("首字母f是却不是false")
         else:
             if len(json_string) < 5:
@@ -44,7 +44,7 @@ class JsonParser(object):
             return self.PARSE_OK, json_string, 'false'
 
     def __json_parse_null(self, json_string):
-        if json_string != 'null':
+        if json_string[:4] != u'null':
             raise ValueError("首字母n是却不是null")
         else:
             if len(json_string) < 4:
@@ -104,8 +104,8 @@ class JsonParser(object):
                 else:
                     index += 1
         if is_valid_string is True:
-            value = json_string[1:index+1]
-            json_string = json_string[index+2:]
+            value = json_string[:index+1]
+            json_string = json_string[index+1:]
             return self.PARSE_OK, json_string, value
         else:
             raise ValueError("PARSE_INVALID_VALUE")
@@ -117,6 +117,7 @@ class JsonParser(object):
         array_to_parse = []
         json_string = json_string[1:].strip()
         if json_string[0] == ']':
+            json_string = json_string[1:]
             return self.PARSE_OK, json_string, array_to_parse
         while True:
             json_return_status, json_string, value = self.__json_parse_value(json_string)
@@ -131,6 +132,39 @@ class JsonParser(object):
                 return self.PARSE_OK, json_string, array_to_parse
             else:
                 raise ValueError("解析数组时出现错误")
+            
+    def __json_parse_object(self, json_string):
+        dict_to_parse = {}
+        dict_key = []
+        dict_value = []
+        side_flag = True
+        json_string = json_string[1:].strip()
+        if json_string[0] == '}':
+            dict_to_parse = dict(zip(dict_key, dict_value))
+            return self.PARSE_OK, json_string, dict_to_parse
+        while True:
+            json_return_status, json_string, value = self.__json_parse_value(json_string)
+            if json_string == '':
+                raise ValueError("找不到下一个}")
+            if side_flag == True:
+                dict_key.append(value)
+            else:
+                dict_value.append(value)
+            json_string = json_string.strip()
+            if json_string[0] == ':':
+                side_flag = False
+                json_string = json_string[1:].strip()
+            elif json_string[0] == '}':
+                json_string = json_string[1:]
+                dict_to_parse = dict(zip(dict_key, dict_value))
+                return self.PARSE_OK, json_string, dict_to_parse
+            elif json_string[0] == ',':
+                json_string = json_string[1:].strip()
+                side_flag = True
+            else:
+                raise ValueError("解析对象时出现错误")
+
+
 
     def __json_parse_value(self, json_string):
         # 可能是null
@@ -150,6 +184,8 @@ class JsonParser(object):
             return self.__json_parse_string(json_string)
         elif json_string[0] == '[':
             return self.__json_parse_array(json_string)
+        elif json_string[0] == '{':
+            return self.__json_parse_object(json_string)
         else:
             raise ValueError("不认识的开头")
 
