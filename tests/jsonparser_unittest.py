@@ -123,6 +123,75 @@ class MyTestCase(unittest.TestCase):
             self.test_function('{"a", True')
             self.test_function("{'a':1}")
 
+    def test_loads(self):
+        json_ok = [
+            ('{}', 1),
+            ('{"":""}', 1),
+            ('{"a":123}', 1),
+            ('{"a":-123}', 1),
+            ('{"a":1.23}', 1),
+            ('{"a":1e1}', 1),
+            ('{"a":true,"b":false}', 1),
+            ('{"a":null}', 1),
+            ('{"a":[]}', 1),
+            ('{"a":{}}', 1),
+            (' {"a:": 123}', 1),
+            ('{ "a  " : 123}', 1),
+            ('{ "a" : 123    	}', 1),
+            ('{"true": "null"}', 1),
+            ('{"":"\\t\\n"}', 1),
+            ('{"\\"":"\\""}', 1),
+        ]
+        json_ok2 = [
+            ('{"a":' + '1' * 310 + '.0' + '}', 2),
+            ('{"a":"abcde,:-+{}[]"}', 2),
+            ('{"a": [1,2,"abc"]}', 2),
+            ('{"d{": "}dd", "a":123}', 2),
+            ('{"a": {"a": {"a": 123}}}', 2),
+            ('{"a": {"a": {"a": [1,2,[3]]}}}', 2),
+            ('{"a": "\\u7f51\\u6613CC\\"\'"}', 3),
+
+            ('{"a":1e-1, "cc": -123.4}', 2),
+            ('{ "{ab" : "}123", "\\\\a[": "]\\\\"}', 3),
+        ]
+        json_ex = [
+            # exceptions
+            ('{"a":[}', 2),
+            ('{"a":"}', 2),
+
+            ('{"a":True}', 1),
+            ('{"a":Null}', 1),
+            ('{"a":foobar}', 2),
+            ("{'a':1}", 3),
+            ('{1:1}', 2),
+            ('{true:1}', 2),
+            ('{"a":{}', 2),
+            ('{"a":-}', 1),
+            ('{"a":[,]}', 2),
+            ('{"a":.1}', 1),
+            ('{"a":+123}', 1),
+            ('{"a":1..1}', 1),
+            ('{"a":--1}', 1),
+            ('{"a":"""}', 1),
+            ('{"a":"\\"}', 1),
+        ]
+        # 测试json_ok
+        test_counter = 0
+        for elem in json_ok:
+            for index in range(0, elem[1]):
+                test_counter += 1
+                self.test_function(elem[0])
+        # 测试json_ok2
+        for elem in json_ok2:
+            for index in range(0, elem[1]):
+                test_counter += 1
+                self.test_function(elem[0])
+        # 测试json_ex
+        for elem in json_ex:
+            for index in range(0, elem[1]):
+                test_counter += 1
+                with self.assertRaises(ValueError):
+                    self.test_function(elem[0])
 
 if __name__ == '__main__':
     unittest.main()

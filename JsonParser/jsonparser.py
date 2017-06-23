@@ -146,7 +146,7 @@ class JsonParser(object):
             json_return_status, json_string, value = self.__json_parse_value(json_string)
             if json_string == '':
                 raise ValueError("找不到下一个}")
-            if side_flag == True:
+            if side_flag is True:
                 dict_key.append(value)
             else:
                 dict_value.append(value)
@@ -206,7 +206,8 @@ class JsonParser(object):
             json_string_copy += element
         json_string_copy = json_string_copy.strip()
         parse_status, json_string_copy, value = self.__json_parse_value(json_string_copy)
-        self.logger.debug(parse_status)
+        print json_string
+        self.logger.debug("{}:{}".format(u"成功解析了字符串".encode('utf-8'), json_string.encode('utf-8')))
         self._data = value
 
     def dumps(self):

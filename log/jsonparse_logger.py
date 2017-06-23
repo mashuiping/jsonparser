@@ -8,7 +8,7 @@ class JsonParseLogger(object):
                             format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                             datefmt='%a, %d %b %Y %H:%M:%S',
                             filename='jsonparser.log',
-                            filemode='w')
+                            filemode='a')
 
     @staticmethod
     def debug( message_to_log):
