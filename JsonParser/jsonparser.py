@@ -1,5 +1,5 @@
 # coding: utf-8
-
+from log.jsonparse_logger import JsonParseLogger
 
 class JsonParser(object):
     """
@@ -41,6 +41,7 @@ class JsonParser(object):
             json_string = json_string[4:]
             return self.PARSE_OK, json_string
 
+
     def loads(self, json_string):
         """
         :param s: JSON格式数据，S为一个JSON字符串
@@ -48,7 +49,9 @@ class JsonParser(object):
         若遇到JSON格式错误的应该抛异常，JSON中数据如果超过
         Python里的浮点数上限的，也抛出异常。JSON的最外层假定为Object
         """
-        pass
+        if not isinstance(json_string, basestring):
+
+
 
     def dumps(self):
         """
