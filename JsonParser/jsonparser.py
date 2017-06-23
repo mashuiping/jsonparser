@@ -23,6 +23,7 @@ class JsonParser(object):
         self.logger = JsonParseLogger()
         self.valid_number_symbol_front = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-')
         self.valid_number_symbol_behind = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', 'E', 'e', '.')
+        self.float_symbol = ('e', 'E', '.')
 
     def __json_parse_true(self, json_string):
         if json_string != 'true':
@@ -53,16 +54,20 @@ class JsonParser(object):
 
     def __json_parse_number(self, json_string):
         isfloat_flag = False
+
         index = 0
         for index, elem in enumerate(json_string):
-            if elem == '.':
+            if elem in self.float_symbol:
                 isfloat_flag = True
             if elem not in self.valid_number_symbol_behind:
                 break
         # 最后跳出来可能是循环结束，也可能是break跳出
         # break跳出说明最后一位不是合法数字字符 循环自动结束说明
         # 最后一位是合法字符，这样跳出需要+1才能包含合法的最后一位
-        if json_string[index] in json_string(json_string):
+        # 并且最后一个字符不能是.
+        if json_string[index] == '.':
+            raise ValueError("json不支持'num.类型'")
+        elif json_string[index] in self.valid_number_symbol_behind:
             index += 1
         if isfloat_flag:
             try:
@@ -87,7 +92,7 @@ class JsonParser(object):
         elif json_string[0] in self.valid_number_symbol_front:
             return self.__json_parse_number(json_string)
         else:
-            return self.PARSE_INVALID_VALUE, json_string, ""
+            raise ValueError("不认识的开头")
 
     def loads(self, json_string):
         """
