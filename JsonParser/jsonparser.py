@@ -19,6 +19,7 @@ class JsonParser(object):
         self.data = {}
         self.PARSE_OK = 0
         self.PARSE_INVALID_VALUE = 1
+        self.logger = JsonParseLogger()
 
     def __json_parse_true(self, json_string):
         if json_string != 'true':
@@ -40,7 +41,7 @@ class JsonParser(object):
         else:
             json_string = json_string[4:]
             return self.PARSE_OK, json_string
-
+    
 
     def loads(self, json_string):
         """
@@ -49,7 +50,21 @@ class JsonParser(object):
         若遇到JSON格式错误的应该抛异常，JSON中数据如果超过
         Python里的浮点数上限的，也抛出异常。JSON的最外层假定为Object
         """
+        # 确保输入为str或unicode类型，然后转换为unicode类型
         if not isinstance(json_string, basestring):
+            self.logger.error("输入类型应该为字符串或Unicode类型")
+        elif isinstance(json_string, str):
+            json_string = json_string.decode()
+        json_string_copy = ""
+        for element in json_string:
+            json_string_copy += element
+        json_string_copy.strip()
+        parse_status, json_string_copy, value = json_parse_value(json_string_copy)
+        return parse_status, value
+
+
+
+
 
 
 
