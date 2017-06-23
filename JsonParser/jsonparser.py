@@ -1,6 +1,7 @@
 # coding: utf-8
 from log.jsonparse_logger import JsonParseLogger
 
+
 class JsonParser(object):
     """
     基于Python2.7封装实现一个可重用的Json解析类
@@ -16,36 +17,45 @@ class JsonParser(object):
     """
 
     def __init__(self):
-        self.data = {}
+        self._data = {}
         self.PARSE_OK = 0
         self.PARSE_INVALID_VALUE = 1
         self.logger = JsonParseLogger()
 
     def __json_parse_true(self, json_string):
         if json_string != 'true':
-            return self.PARSE_INVALID_VALUE, json_string
+            raise ValueError("首字母t是却不是true")
         else:
             json_string = json_string[4:]
             return self.PARSE_OK, json_string
 
     def __json_parse_false(self, json_string):
         if json_string != 'false':
-            return self.PARSE_INVALID_VALUE, json_string
+            raise ValueError("首字母f是却不是false")
         else:
             json_string = json_string[5:]
             return self.PARSE_OK, json_string
 
     def __json_parse_null(self, json_string):
         if json_string != 'null':
-            return self.PARSE_INVALID_VALUE, json_string
+            raise ValueError("首字母n是却不是null")
         else:
             json_string = json_string[4:]
             return self.PARSE_OK, json_string
-    
+
+    def __json_parse_value(self, json_string):
+        if json_string[0] == 'n':
+            return self.__json_parse_null(json_string)
+        elif json_string[0] == 't':
+            return self.__json_parse_true(json_string)
+        elif json_string[0] == 'f':
+            return self.__json_parse_false(json_string)
+        else:
+            return self.PARSE_INVALID_VALUE, json_string, ""
 
     def loads(self, json_string):
         """
-        :param s: JSON格式数据，S为一个JSON字符串
+        :param json_string: JSON格式数据，S为一个JSON字符串
         :return: 无返回值
         若遇到JSON格式错误的应该抛异常，JSON中数据如果超过
         Python里的浮点数上限的，也抛出异常。JSON的最外层假定为Object
@@ -59,13 +69,9 @@ class JsonParser(object):
         for element in json_string:
             json_string_copy += element
         json_string_copy.strip()
-        parse_status, json_string_copy, value = json_parse_value(json_string_copy)
-        return parse_status, value
-
-
-
-
-
+        parse_status, json_string_copy, value = self.__json_parse_value(json_string_copy)
+        self.logger.debug(parse_status)
+        self._data = value
 
 
     def dumps(self):
