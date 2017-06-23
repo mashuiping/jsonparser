@@ -86,7 +86,8 @@ class JsonParser(object):
         is_valid_string = False
         index = 0
         string_len = len(json_string)
-        for index in range(0, string_len):
+        # 寻找第二个引号(能进到这个函数说明第一个引号就在第一个位置)，即找到字符串的结尾位置
+        for index in range(1, string_len):
             if json_string[index] == '"':
                 is_valid_string = True
                 break
@@ -95,13 +96,16 @@ class JsonParser(object):
                     if string_len - index < 6:
                         raise ValueError("字符串不符合\uxxxx格式")
                     else:
-                        json_string = json_string[index:index+6]
+                        json_string_copy = json_string[:index]
+                        json_string_copy += json_string[index:index+6].decode()
+                        json_string = json_string_copy + json_string[index+6:]
+                        # json_string[index+4:] = json_string[index+6:]
                     index += 5
                 else:
                     index += 1
         if is_valid_string is True:
             value = json_string[1:index+1]
-            json_string = json_string[index+2]
+            json_string = json_string[index+2:]
             return self.PARSE_OK, json_string, value
         else:
             raise ValueError("PARSE_INVALID_VALUE")

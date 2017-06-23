@@ -50,7 +50,7 @@ class MyTestCase(unittest.TestCase):
 #        self.test_function(u"\tnull\n")
 
     def test_parse_number(self):
-        # 没有异常查看日志
+        # 能通过测试的样例
         self.test_function("0.0")
         self.test_function("0.0")
         self.test_function("-0.0")
@@ -67,7 +67,7 @@ class MyTestCase(unittest.TestCase):
         self.test_function("1.234E+10")
         self.test_function("1e-10000")
 
-        # 测试不能通过例子
+        # 测试不能通过样例
         with self.assertRaises(ValueError):
             self.test_function("+0")
         with self.assertRaises(ValueError):
@@ -84,12 +84,17 @@ class MyTestCase(unittest.TestCase):
             self.test_function("NAN")
 
     def test_parse_string(self):
+        # 能通过测试的样例
         self.test_function('""')
         self.test_function('"a"')
         self.test_function('"a:"')
         self.test_function('"\\t\\n"')
         self.test_function('"}dd"')
-        self.test_function('"\\u7f51\\u6613cc"')
+        self.test_function('"\\\\a[\\\\"')
+        # 会引发异常的测试
+        with self.assertRaises(ValueError):
+            self.test_function('"\uxx"')
+
 
 if __name__ == '__main__':
     unittest.main()
