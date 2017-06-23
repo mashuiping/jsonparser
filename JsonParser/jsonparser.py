@@ -85,13 +85,18 @@ class JsonParser(object):
     def __json_parse_string(self, json_string):
         is_valid_string = False
         index = 0
-        for index in range(0, len(json_string)):
+        string_len = len(json_string)
+        for index in range(0, string_len):
             if json_string[index] == '"':
                 is_valid_string = True
                 break
             elif json_string[index] == '\\':
                 if json_string[index+1] == 'u':
-                    index += 4
+                    if string_len - index < 6:
+                        raise ValueError("字符串不符合\uxxxx格式")
+                    else:
+                        json_string = json_string[index:index+6]
+                    index += 5
                 else:
                     index += 1
         if is_valid_string is True:

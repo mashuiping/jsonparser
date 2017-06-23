@@ -75,13 +75,21 @@ class MyTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.test_function(".123")
         with self.assertRaises(ValueError):
-            self.test_function("1."),
+            self.test_function("1.")
         with self.assertRaises(ValueError):
-            self.test_function("INF"),
+            self.test_function("INF")
         with self.assertRaises(ValueError):
-             self.test_function("inf"),
+            self.test_function("inf")
         with self.assertRaises(ValueError):
-            self.test_function("NAN"),
+            self.test_function("NAN")
+
+    def test_parse_string(self):
+        self.test_function('""')
+        self.test_function('"a"')
+        self.test_function('"a:"')
+        self.test_function('"\\t\\n"')
+        self.test_function('"}dd"')
+        self.test_function('"\\u7f51\\u6613cc"')
 
 if __name__ == '__main__':
     unittest.main()
