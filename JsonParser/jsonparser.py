@@ -10,3 +10,35 @@
 
 支持将数据以JSON格式存储到文件并加载回来使用
 """
+
+
+class JsonParser(object):
+    def __init__(self):
+        self._data = {}
+
+    def loads(self, s):
+        pass
+
+    def dumps(self):
+        pass
+
+    def load_file(self, f):
+        pass
+
+    def dump_file(self, f):
+        pass
+
+    def load_dict(self, d):
+        pass
+
+    def dump_dict(self):
+        pass
+
+    def __getitem__(self, item):
+        pass
+
+    def __setitem__(self, key, value):
+        pass
+
+    def update(self,d):
+        pass
