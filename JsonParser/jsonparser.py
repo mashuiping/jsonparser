@@ -111,14 +111,19 @@ class JsonParser(object):
             raise ValueError("PARSE_INVALID_VALUE")
 
     def __json_parse_array(self, json_string):
+        if json_string == '':
+            raise ValueError("找不到下一个]")
+
         array_to_parse = []
         json_string = json_string[1:].strip()
         if json_string[0] == ']':
             return self.PARSE_OK, json_string, array_to_parse
         while True:
             json_return_status, json_string, value = self.__json_parse_value(json_string)
+            if json_string == '':
+                raise ValueError("找不到下一个]")
             array_to_parse.append(value)
-            json_string.strip()
+            json_string = json_string.strip()
             if json_string[0] == ',':
                 json_string = json_string[1:].strip()
             elif json_string[0] == ']':
@@ -147,7 +152,6 @@ class JsonParser(object):
             return self.__json_parse_array(json_string)
         else:
             raise ValueError("不认识的开头")
-
 
     def loads(self, json_string):
         """

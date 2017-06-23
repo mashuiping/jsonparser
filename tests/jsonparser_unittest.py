@@ -95,6 +95,15 @@ class MyTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.test_function('"\uxx"')
 
+    def test_parse_array(self):
+        # 能通过测试的样例
+        self.test_function("[]")
+        self.test_function("[1,2,3]")
+        self.test_function("[   3,   4  ,  3]")
+        # 会引发异常的样例
+        with self.assertRaises(ValueError):
+            self.test_function("[1, 5, 3")
+
 
 if __name__ == '__main__':
     unittest.main()
