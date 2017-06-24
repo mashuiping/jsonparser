@@ -70,6 +70,7 @@ class JsonParser(object):
             index += 1
         if isfloat_flag:
             try:
+                # 超过浮点数上限直接用inf表示，不抛出异常
                 value = float(json_string[:index])
             except ValueError:
                 raise ValueError("float转换错误")
@@ -192,6 +193,58 @@ class JsonParser(object):
         else:
             raise ValueError("不认识的开头")
 
+    def __json_dump_array(self, json_string, array):
+        json_string += "["
+        for elem in array:
+            if isinstance(elem, True):
+                json_string += 'true'
+            elif isinstance(elem, False):
+                json_string += 'false'
+            elif isinstance(elem, None):
+                json_string += 'null'
+            elif isinstance(elem, float) or isinstance(elem, int):
+                json_string += str(elem)
+            elif isinstance(elem, dict):
+                json_string += self.__json_dump_object(json_string, elem)
+            elif isinstance(elem, array):
+                json_string += self.__json_dump_array(json_string, elem)
+            else:
+                raise ValueError("__json_dump_array发生错误")
+        json_string += ']'
+        return json_string
+
+    # 对象转字符串
+    def __json_dump_object(self, json_string, object):
+        json_string += '{'
+        counter = len(object)
+        if counter is 0:
+            json_string += '}'
+            return json_string
+        for elem in object:
+            counter = counter - 1
+            json_string += "{}{}".format(elem,": ")
+            if isinstance(object[elem], list):
+                json_string = self.__json_dump_array(json_string, object[elem])
+            elif isinstance(object[elem], dict):
+                json_string = self.__json_dump_object(json_string, object[elem])
+            elif isinstance(object[elem], unicode):
+                json_string += object[elem]
+            elif object[elem] == True:
+                json_string += 'true'
+            elif object[elem] == False:
+                json_string += 'false'
+            elif object[elem] == None:
+                json_string += 'null'
+            # 不能放在True False前面，可能会吧True判断为int类型
+            elif isinstance(object[elem], float) or isinstance(object[elem],int):
+                json_string += str(object[elem])
+            else:
+                raise ValueError("__json_dump_object发生错误")
+            if counter == 0:
+                json_string += "}"
+            else:
+                json_string += ", "
+        return json_string
     def loads(self, json_string):
         """
         :param json_string: JSON格式数据，S为一个JSON字符串
@@ -218,7 +271,33 @@ class JsonParser(object):
         :return: JSON格式内容
         将实例中的内容转成JSON格式返回
         """
-        pass
+        json_string = '{'
+        counter = len(self._data)
+        if counter == 0:
+            json_string += '}'
+            return json_string
+        for elem in self._data.items():
+            counter = counter - 1
+            json_string += '{}{}'.format(elem[0].decode(),': ')
+            if isinstance(elem[1], list):
+                json_string = self.__json_dump_array(json_string, elem[1])
+            elif isinstance(elem[1], dict):
+                json_string = self.__json_dump_object(json_string, elem[1])
+            elif isinstance(elem[1], unicode):
+                json_string += elem[1]
+            elif elem[1] == True:
+                json_string += 'true'
+            elif elem[1] == False:
+                json_string += 'false'
+            elif elem[1] == None:
+                json_string += 'null'
+            elif isinstance(elem[1], float) or isinstance(elem[1], int):
+                json_string += str(elem[1])
+            if counter == 0:
+                json_string += '}'
+            else:
+                json_string += ', '
+        return json_string
 
     def load_file(self, f):
         """
