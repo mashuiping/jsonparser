@@ -200,7 +200,11 @@ class MyTestCase(unittest.TestCase):
         for elem in self.json_ok:
             for index in range(0, elem[1]):
                 my_jsonparser.loads(elem[0])
-                self.assertEqual(my_jsonparser.dumps(),json.dumps(json.loads(elem[0])))
+                self.assertEqual(my_jsonparser.dumps(), json.dumps(json.loads(elem[0])))
+        for elem in self.json_ok2:
+            for index in range(0, elem[1]):
+                my_jsonparser.loads(elem[0])
+                self.assertEqual(my_jsonparser.dumps(), json.dumps(json.loads(elem[0])))
         # 会引发异常的样例
 
 if __name__ == '__main__':

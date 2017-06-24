@@ -79,6 +79,8 @@ class JsonParser(object):
                 value = int(json_string[:index])
             except ValueError:
                 raise ValueError("int转换错误")
+        if value is float('inf') or float('-inf'):
+            value = 'Infinity'
         json_string = json_string[index:]
         return self.PARSE_OK, json_string, value
 
