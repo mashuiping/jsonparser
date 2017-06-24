@@ -220,11 +220,14 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(test_dict, my_jsonparser.dump_dict())
         # 通过assertNotEqual知道两个dict地址不想等
         self.assertNotEqual(test_dict is my_jsonparser.dump_dict(), True)
-    def test_getitem_(self):
+    def test_getitem_setitem(self):
         test_dict = {"bigberg": [7600, {"1": [["iPhone", 6300], ["Bike", 800], ["shirt", 300]]}]}
         my_jsonparser = jsonparser.JsonParser()
         my_jsonparser.load_dict(test_dict)
         self.assertEqual(my_jsonparser["bigberg"], [7600, {"1": [["iPhone", 6300], ["Bike", 800], ["shirt", 300]]}])
-    
+        my_jsonparser["bigberg"] = "[hello world]"
+        self.assertEqual(my_jsonparser["bigberg"], "[hello world]")
+    def  
+
 if __name__ == '__main__':
     unittest.main()
