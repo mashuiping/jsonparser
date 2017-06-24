@@ -196,19 +196,19 @@ class MyTestCase(unittest.TestCase):
 #                with self.assertRaises(ValueError):
 #                    self.test_func_loads(elem[0])
 
-    def test_dumps(self):
-        # 能通过测试的样例
-        my_jsonparser = jsonparser.JsonParser()
-        for elem in self.json_ok:
-            for index in range(0, elem[1]):
-                my_jsonparser.loads(elem[0])
-                self.assertEqual(my_jsonparser.dumps(), json.dumps(json.loads(elem[0])))
-        for elem in self.json_ok2:
-            for index in range(0, elem[1]):
-                my_jsonparser.loads(elem[0])
-                self.assertEqual(my_jsonparser.dumps(), json.dumps(json.loads(elem[0])))
+#   def test_dumps(self):
+#       # 能通过测试的样例
+#       my_jsonparser = jsonparser.JsonParser()
+#       for elem in self.json_ok:
+#           for index in range(0, elem[1]):
+#               my_jsonparser.loads(elem[0])
+#               self.assertEqual(my_jsonparser.dumps(), json.dumps(json.loads(elem[0])))
+#       for elem in self.json_ok2:
+#           for index in range(0, elem[1]):
+#               my_jsonparser.loads(elem[0])
+#               self.assertEqual(my_jsonparser.dumps(), json.dumps(json.loads(elem[0])))
         # 会引发异常的样例, 能loads成功一般就不会有异常了
-    
+
 
 if __name__ == '__main__':
     unittest.main()
