@@ -199,9 +199,9 @@ class JsonParser(object):
         json_string += "["
         for elem in array:
             if isinstance(elem, dict):
-                json_string += self.__json_dump_object(json_string, elem)
-            elif isinstance(elem, array):
-                json_string += self.__json_dump_array(json_string, elem)
+                json_string = self.__json_dump_object(json_string, elem)
+            elif isinstance(elem, list):
+                json_string = self.__json_dump_array(json_string, elem)
             elif isinstance(elem, unicode):
                 json_string += elem
             elif isinstance(elem, bool):
@@ -215,6 +215,10 @@ class JsonParser(object):
                 json_string += str(elem)
             else:
                 raise ValueError("__json_dump_array发生错误")
+            if elem != array[-1]:
+                json_string += ', '
+
+
         json_string += ']'
         return json_string
 
