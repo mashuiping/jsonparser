@@ -193,6 +193,15 @@ class JsonParser(object):
             raise ValueError(self.error_message)
 
     def __json_parse_array(self, json_string):
+        """
+        :param json_string: 当前字符串的值
+        :return: 返回转换状态，当前json类型字符串，提取到的值
+        解析并提取json数组值.
+        解析思路：
+            数组中存储的值可能是所有类型，用逗号分隔，
+            运用状态机的思想，当解析到某一种类型的时候，把字符串交给解析
+            那种类型的方法解析，然后返回结果。
+        """
         if json_string == '':
             self.error_message = "找不到下一个]"
             self.logger.error(self.json_string, self.error_message)
@@ -230,6 +239,18 @@ class JsonParser(object):
                 raise ValueError(self.error_message)
 
     def __json_parse_object(self, json_string):
+        """
+        :param json_string: 当前字符串的值
+        :return: 返回转换状态，当前json类型字符串，提取到的值
+        解析并提取json对象值.
+        解析思路：
+            由于对象是key:value形式, 可以建立一个key列表，一个value列表
+            分别存储后合成一个对象。
+            此时，key必然是字符串类型，但是value的类型可以是全部的6种类型
+            运用状态机的思想，当解析到某一种类型的时候，把字符串交给解析
+            那种类型的方法解析，然后返回结果。
+        """
+
         dict_key = []
         dict_value = []
         side_flag = True
@@ -276,6 +297,14 @@ class JsonParser(object):
                 raise ValueError(self.error_message)
 
     def __json_parse_value(self, json_string):
+        """
+        :param json_string: 当前字符串的值
+        :return: 返回转换状态，当前json类型字符串，提取到的值
+        解析并提取json所有可能对象的值.
+        解析思路：
+            根据字符串的第一个非空符号可以唯一确定是哪一种数据类型
+            不能确定视为非法字符
+        """
         # 可能是null
         if json_string[0] == 'n':
             return self.__json_parse_null(json_string)
@@ -303,6 +332,11 @@ class JsonParser(object):
             raise ValueError(self.error_message)
 
     def __json_dump_array(self, json_string, array):
+        """
+        :param json_string: 当前字符串值
+        :param array: 要转化成字符串的数组
+        :return: 加入数组后json字符串的值
+        """
         json_string += "["
         for elem in array:
             if isinstance(elem, dict):
@@ -329,8 +363,12 @@ class JsonParser(object):
         json_string += ']'
         return json_string
 
-    # 对象转字符串
     def __json_dump_object(self, json_string, json_object):
+        """
+        :param json_string: 当前字符串的值
+        :param json_object: 要转换的对象值
+        :return: 加入转换后对象后json字符串的值
+        """
         json_string += '{'
         counter = len(json_object)
         if counter is 0:
