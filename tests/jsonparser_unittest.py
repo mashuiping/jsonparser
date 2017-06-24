@@ -220,14 +220,25 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(test_dict, my_jsonparser.dump_dict())
         # 通过assertNotEqual知道两个dict地址不想等
         self.assertNotEqual(test_dict is my_jsonparser.dump_dict(), True)
-    def test_getitem_setitem(self):
-        test_dict = {"bigberg": [7600, {"1": [["iPhone", 6300], ["Bike", 800], ["shirt", 300]]}]}
+    def test_getitem_setitem_update(self):
+        # test getitem
+        test_dict = {"bigberg": [7600, {"1": [["iPhone", 6300], ["Bike", 800], ["shirt", 300]]}],
+                     1:"key不是字符串，不能通过load_dice加入"}
         my_jsonparser = jsonparser.JsonParser()
         my_jsonparser.load_dict(test_dict)
         self.assertEqual(my_jsonparser["bigberg"], [7600, {"1": [["iPhone", 6300], ["Bike", 800], ["shirt", 300]]}])
+        # test setitem
         my_jsonparser["bigberg"] = "[hello world]"
         self.assertEqual(my_jsonparser["bigberg"], "[hello world]")
-    def  
+        # test update
+        # 现在的test_dict = {"bigberg":"hello world"}
+        new_dict = {"python":["c++", "c", "java"], "English":["Math","Coding"], "bigberg":"这个将不会加入"}
+        my_jsonparser.update(new_dict)
+        self.assertEqual(my_jsonparser.dump_dict(), {'python': ['c++', 'c', 'java'],
+                                                     'bigberg': '[hello world]',
+                                                     'English': ['Math', 'Coding']})
+
+
 
 if __name__ == '__main__':
     unittest.main()
