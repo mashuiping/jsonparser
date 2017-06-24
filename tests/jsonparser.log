@@ -1337,3 +1337,80 @@ Sat, 24 Jun 2017 07:53:46 jsonparse_logger.py[line:15] DEBUG 成功解析了字�
 true
 Sat, 24 Jun 2017 07:53:46 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:	true
 
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"":""}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":123}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":-123}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":1.23}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":1e1}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":true,"b":false}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":null}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":[]}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":{}}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串: {"a:": 123}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{ "a  " : 123}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{ "a" : 123    	}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"true": "null"}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"":"\t\n"}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"\"":"\""}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111.0}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111.0}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":"abcde,:-+{}[]"}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":"abcde,:-+{}[]"}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": [1,2,"abc"]}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": [1,2,"abc"]}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"d{": "}dd", "a":123}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"d{": "}dd", "a":123}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": {"a": {"a": 123}}}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": {"a": {"a": 123}}}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": {"a": {"a": [1,2,[3]]}}}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": {"a": {"a": [1,2,[3]]}}}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": "\u7f51\u6613CC\"'"}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": "\u7f51\u6613CC\"'"}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": "\u7f51\u6613CC\"'"}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":1e-1, "cc": -123.4}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":1e-1, "cc": -123.4}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"":""}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":true}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a" :[]}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": false}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a" : 123}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": "{ab" }
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":"cc"}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":[1,2,[3]]}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a": {"a": {"a": [1,2,[3]]}}}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:{"a":1e-1}
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:[]
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:[1,2,3]
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:[   3,   4  ,  3]
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:	
+false
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:	false
+
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:	
+null
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:	null
+
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:0.0
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:0.0
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:-0.0
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:1
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:1.5
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:-1.5
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:3.1415
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:1E10
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:1e10
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:1E+10
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:1E-10
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:-1E10
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:-1E-10
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:1.234E+10
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:1e-10000
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:""
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:"a"
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:"a:"
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:"\t\n"
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:	
+true
+Sat, 24 Jun 2017 07:57:27 jsonparse_logger.py[line:15] DEBUG 成功解析了字符串:	true
+

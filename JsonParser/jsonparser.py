@@ -31,7 +31,7 @@ class JsonParser(object):
             if len(json_string) < 4:
                 raise ValueError("字面值不足true的长度")
             json_string = json_string[4:]
-            return self.PARSE_OK, json_string, 'true'
+            return self.PARSE_OK, json_string, True
 
     def __json_parse_false(self, json_string):
         if json_string[:5] != u'false':
@@ -40,7 +40,7 @@ class JsonParser(object):
             if len(json_string) < 5:
                 raise ValueError("字面值不足false的长度")
             json_string = json_string[5:]
-            return self.PARSE_OK, json_string, 'false'
+            return self.PARSE_OK, json_string, False
 
     def __json_parse_null(self, json_string):
         if json_string[:4] != u'null':
@@ -49,7 +49,7 @@ class JsonParser(object):
             if len(json_string) < 4:
                 raise ValueError("字面值不足null的长度")
             json_string = json_string[4:]
-            return self.PARSE_OK, json_string, 'null'
+            return self.PARSE_OK, json_string, None
 
     def __json_parse_number(self, json_string):
         isfloat_flag = False
@@ -211,6 +211,7 @@ class JsonParser(object):
         parse_status, json_string_copy, value = self.__json_parse_value(json_string_copy)
         self.logger.debug("{}:{}".format(u"成功解析了字符串".encode('utf-8'), json_string.encode('utf-8')))
         self._data = value
+        print self._data
 
     def dumps(self):
         """
