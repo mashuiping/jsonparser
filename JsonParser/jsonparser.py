@@ -79,8 +79,8 @@ class JsonParser(object):
                 value = int(json_string[:index])
             except ValueError:
                 raise ValueError("int转换错误")
-        if value is float('inf') or float('-inf'):
-            value = 'Infinity'
+        if value == (float('inf') or float('-inf')):
+            value = u'Infinity'
         json_string = json_string[index:]
         return self.PARSE_OK, json_string, value
 
@@ -198,18 +198,21 @@ class JsonParser(object):
     def __json_dump_array(self, json_string, array):
         json_string += "["
         for elem in array:
-            if isinstance(elem, True):
-                json_string += 'true'
-            elif isinstance(elem, False):
-                json_string += 'false'
-            elif isinstance(elem, None):
-                json_string += 'null'
-            elif isinstance(elem, float) or isinstance(elem, int):
-                json_string += str(elem)
-            elif isinstance(elem, dict):
+            if isinstance(elem, dict):
                 json_string += self.__json_dump_object(json_string, elem)
             elif isinstance(elem, array):
                 json_string += self.__json_dump_array(json_string, elem)
+            elif isinstance(elem, unicode):
+                json_string += elem
+            elif isinstance(elem, bool):
+                if elem == True:
+                    json_string += 'true'
+                else:
+                    json_string += 'false'
+            elif elem == None:
+                json_string += 'null'
+            elif isinstance(elem, float) or isinstance(elem, int):
+                json_string += str(elem)
             else:
                 raise ValueError("__json_dump_array发生错误")
         json_string += ']'
@@ -231,10 +234,11 @@ class JsonParser(object):
                 json_string = self.__json_dump_object(json_string, object[elem])
             elif isinstance(object[elem], unicode):
                 json_string += object[elem]
-            elif object[elem] == True:
-                json_string += 'true'
-            elif object[elem] == False:
-                json_string += 'false'
+            elif isinstance(object[elem], bool):
+                    if object[elem] == True:
+                        json_string += 'true'
+                    elif object[elem] == False:
+                        json_string += 'false'
             elif object[elem] == None:
                 json_string += 'null'
             # 不能放在True False前面，可能会吧True判断为int类型
@@ -287,10 +291,11 @@ class JsonParser(object):
                 json_string = self.__json_dump_object(json_string, elem[1])
             elif isinstance(elem[1], unicode):
                 json_string += elem[1]
-            elif elem[1] == True:
-                json_string += 'true'
-            elif elem[1] == False:
-                json_string += 'false'
+            elif isinstance(elem[1], bool):
+                if elem[1] == True:
+                    json_string += 'true'
+                else:
+                    json_string += 'false'
             elif elem[1] == None:
                 json_string += 'null'
             elif isinstance(elem[1], float) or isinstance(elem[1], int):
