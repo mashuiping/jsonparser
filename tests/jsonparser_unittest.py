@@ -207,10 +207,24 @@ class MyTestCase(unittest.TestCase):
 #               my_jsonparser.loads(elem[0])
 #               self.assertEqual(my_jsonparser.dumps(), json.dumps(json.loads(elem[0])))
         # 会引发异常的样例, 能loads成功一般就不会有异常了
-    def test_load_file_dump_file(self):
-        my_jsonparser = jsonparser.JsonParser()
-        my_jsonparser.load_file('json_in.json')
-        my_jsonparser.dump_file('json_out.json')
+#    def test_load_file_dump_file(self):
+#        my_jsonparser = jsonparser.JsonParser()
+#        my_jsonparser.load_file('json_in.json')
+#        my_jsonparser.dump_file('json_out.json')
 
+    def test_load_dict_dump_dict(self):
+        test_dict = {"bigberg": [7600, {"1": [["iPhone", 6300], ["Bike", 800], ["shirt", 300]]}]}
+        my_jsonparser = jsonparser.JsonParser()
+        my_jsonparser.load_dict(test_dict)
+        # 通过assertEqual知道两个dict值相等
+        self.assertEqual(test_dict, my_jsonparser.dump_dict())
+        # 通过assertNotEqual知道两个dict地址不想等
+        self.assertNotEqual(test_dict is my_jsonparser.dump_dict(), True)
+    def test_getitem_(self):
+        test_dict = {"bigberg": [7600, {"1": [["iPhone", 6300], ["Bike", 800], ["shirt", 300]]}]}
+        my_jsonparser = jsonparser.JsonParser()
+        my_jsonparser.load_dict(test_dict)
+        self.assertEqual(my_jsonparser["bigberg"], [7600, {"1": [["iPhone", 6300], ["Bike", 800], ["shirt", 300]]}])
+    
 if __name__ == '__main__':
     unittest.main()

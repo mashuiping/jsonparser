@@ -385,15 +385,17 @@ class JsonParser(object):
         :return: 无返回值
         将dict中读取数据存入实例中，若遇到不是字符串的key则忽略
         """
-
-        pass
+        for elem in d:
+            if isinstance(elem, basestring):
+                self._data[elem] = d[elem]
 
     def dump_dict(self):
         """
         :return: 字典，包含实例中的内容
         返回一个字典，包含实例中的内容
         """
-        pass
+        new_data = dict.copy(self._data)
+        return new_data
 
     def __getitem__(self, item):
         """
@@ -401,8 +403,7 @@ class JsonParser(object):
         :return: 键值为item的value值
         获取self._data[iter]
         """
-
-        pass
+        return self._data[item]
 
     def __setitem__(self, key, value):
         """
@@ -411,7 +412,7 @@ class JsonParser(object):
         :return: 无返回值
         给字典添加键值为key的值value
         """
-        pass
+        self._data[key] = value
 
     def update(self,d):
         """
@@ -419,4 +420,7 @@ class JsonParser(object):
         :return: 无返回值
         用字典d更新实例中的数据，类似于字典的update
         """
-        pass
+        for key in d:
+            if key not in self._data:
+                self._data[key] = d[key]
+
