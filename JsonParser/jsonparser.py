@@ -17,15 +17,26 @@ class JsonParser(object):
     """
 
     def __init__(self):
+        # 字典格式保存json数据
         self._data = {}
+        # 对输入字符串的深拷贝
         self.json_string = ""
+        # 转换成功
         self.PARSE_OK = 0
+        # 转换失败
         self.PARSE_INVALID_VALUE = 1
+        # JsonParserLogger类实例
         self.logger = JsonParseLogger()
+        # 合法的数字开头标志
         self.valid_number_symbol_front = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-')
+        # 合法的数字尾部标志,不一定是最后一个字符
         self.valid_number_symbol_behind = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', 'E', 'e', '.')
+        # 浮点数标志
         self.float_symbol = ('e', 'E', '.')
+        # 出错时的具体信息
         self.error_message = ""
+        # 设置栈，找出括号匹配不合法字符串
+        self.stack = []
 
     def __json_parse_true(self, json_string):
         if json_string[:4] != u'true':
@@ -150,6 +161,10 @@ class JsonParser(object):
         array_to_parse = []
         json_string = json_string[1:].strip()
         if json_string[0] == ']':
+            if len(self.stack) is 0 or self.stack.pop() != '[':
+                self.error_message = "[]括号不匹配"
+                self.logger.error(self.json_string, self.error_message)
+                raise ValueError(self.error_message)
             json_string = json_string[1:]
             return self.PARSE_OK, json_string, array_to_parse
         while True:
@@ -163,6 +178,10 @@ class JsonParser(object):
             if json_string[0] == ',':
                 json_string = json_string[1:].strip()
             elif json_string[0] == ']':
+                if len(self.stack)is 0 or self.stack.pop() != '[':
+                    self.error_message = "[]括号不匹配"
+                    self.logger.error(self.json_string, self.error_message)
+                    raise ValueError(self.error_message)
                 json_string = json_string[1:]
                 return self.PARSE_OK, json_string, array_to_parse
             else:
@@ -176,8 +195,12 @@ class JsonParser(object):
         side_flag = True
         json_string = json_string[1:].strip()
         if json_string[0] == '}':
+            if len(self.stack) is 0 or self.stack.pop() != '{':
+                self.error_message = "{}括号不匹配"
+                self.logger.error(self.json_string, self.error_message)
+                raise ValueError(self.error_message)
             dict_to_parse = dict(zip(dict_key, dict_value))
-            return self.PARSE_OK, json_string, dict_to_parse
+            return self.PARSE_OK, json_string[1:], dict_to_parse
         while True:
             json_return_status, json_string, value = self.__json_parse_value(json_string)
             if json_string == '':
@@ -197,6 +220,10 @@ class JsonParser(object):
                 side_flag = False
                 json_string = json_string[1:].strip()
             elif json_string[0] == '}':
+                if len(self.stack) is 0 or self.stack.pop() != '{':
+                    self.error_message = "{}括号不匹配"
+                    self.logger.error(self.json_string, self.error_message)
+                    raise ValueError(self.error_message)
                 json_string = json_string[1:]
                 dict_to_parse = dict(zip(dict_key, dict_value))
                 return self.PARSE_OK, json_string, dict_to_parse
@@ -225,8 +252,10 @@ class JsonParser(object):
         elif json_string[0] == '\"':
             return self.__json_parse_string(json_string)
         elif json_string[0] == '[':
+            self.stack.append('[')
             return self.__json_parse_array(json_string)
         elif json_string[0] == '{':
+            self.stack.append('{')
             return self.__json_parse_object(json_string)
         else:
             self.error_message = "不认识的开头"
@@ -304,6 +333,8 @@ class JsonParser(object):
         Python里的浮点数上限的，也抛出异常。JSON的最外层假定为Object
         """
         # 确保输入为str或unicode类型，然后转换为unicode类型
+        # 初始化loads函数
+        self.stack = []
         if not isinstance(json_string, (str, unicode)):
             self.error_message = "输入类型应该为字符串或Unicode类型"
             self.logger.error(self.json_string, self.error_message)
@@ -317,6 +348,10 @@ class JsonParser(object):
             json_string_copy += element
         json_string_copy = json_string_copy.strip()
         parse_status, json_string_copy, value = self.__json_parse_value(json_string_copy)
+        if len(self.stack) is not 0:
+            self.error_message = "括号{}不匹配".format(self.stack.pop())
+            self.logger.error(self.json_string, self.error_message)
+            raise ValueError(self.error_message)
         self.logger.debug(self.json_string, value)
         self._data = value
 
@@ -334,10 +369,12 @@ class JsonParser(object):
             counter -= 1
             json_string += '{}{}'.format(elem[0].decode(), ': ')
             if isinstance(elem[1], list):
+                self.stack.append('[')
                 json_string = self.__json_dump_array(json_string, elem[1])
             elif isinstance(elem[1], dict):
+                self.stack.append('{')
                 json_string = self.__json_dump_object(json_string, elem[1])
-            elif isinstance(elem[1], unicode):
+            elif isinstance(elem[1], (unicode, str)):
                 json_string += elem[1]
             elif isinstance(elem[1], bool):
                 if elem[1] is True:

@@ -51,7 +51,7 @@ class MyTestCase(unittest.TestCase):
             ("{'a':1}", 3),
             ('{1:1}', 2),
             ('{true:1}', 2),
-            # ('{"a":{}', 2),
+            ('{"a":{}', 2),
             ('{"a":-}', 1),
             ('{"a":[,]}', 2),
             ('{"a":.1}', 1),
@@ -174,6 +174,7 @@ class MyTestCase(unittest.TestCase):
             self.test_func_loads('{"a":"\\"}')
             self.test_func_loads('{"a", [}')
             self.test_func_loads('{"a", True')
+            self.test_func_loads("{'a':1}")
             self.test_func_loads("{'a':1}")
 
     def test_loads(self):
