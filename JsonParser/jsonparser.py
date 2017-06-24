@@ -376,7 +376,8 @@ class JsonParser(object):
         文件若存在则覆盖，
         文件操作失败抛出异常
         """
-        pass
+        with open(f, 'w') as file:
+            file.write(self.dumps())
 
     def load_dict(self, d):
         """

@@ -8,7 +8,6 @@ from JsonParser import jsonparser
 class MyTestCase(unittest.TestCase):
     def setUp(self):
         self.test_func_loads = jsonparser.JsonParser().loads
-        self.test_func_dumps = jsonparser.JsonParser().dumps
         self.json_ok = [
             ('{}', 1),
             ('{"":""}', 1),
@@ -208,7 +207,10 @@ class MyTestCase(unittest.TestCase):
 #               my_jsonparser.loads(elem[0])
 #               self.assertEqual(my_jsonparser.dumps(), json.dumps(json.loads(elem[0])))
         # 会引发异常的样例, 能loads成功一般就不会有异常了
-
+    def test_load_file_dump_file(self):
+        my_jsonparser = jsonparser.JsonParser()
+        my_jsonparser.load_file('json_in.json')
+        my_jsonparser.dump_file('json_out.json')
 
 if __name__ == '__main__':
     unittest.main()
