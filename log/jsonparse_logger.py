@@ -15,5 +15,5 @@ class JsonParseLogger(object):
         logging.debug('{}解析成功,解析成：{}'.format(json_string, debug_message))
 
     @staticmethod
-    def error(json_string, debug_message, line_number):
-        logging.error('{}解析失败， 原因：{}, 失败所在行号'.format(json_string, debug_message, line_number))
+    def error(json_string, debug_message):
+        logging.error('{}解析失败， 原因：{}, 失败所在行号'.format(json_string, debug_message))

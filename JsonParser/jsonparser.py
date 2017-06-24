@@ -1,7 +1,6 @@
 # coding: utf-8
 from log.jsonparse_logger import JsonParseLogger
-# 使用sys获取出错行号
-import sys
+
 
 class JsonParser(object):
     """
@@ -31,12 +30,12 @@ class JsonParser(object):
     def __json_parse_true(self, json_string):
         if json_string[:4] != u'true':
             self.error_message = "首字母t的字面量是却不是true"
-            self.logger.error(self.json_string,self.error_message, sys._getframe().f_lineno)
+            self.logger.error(self.json_string, self.error_message)
             raise ValueError(self.error_message)
         else:
             if len(json_string) < 4:
                 self.error_message = "字面值不足true的长度"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
             json_string = json_string[4:]
             return self.PARSE_OK, json_string, True
@@ -44,12 +43,12 @@ class JsonParser(object):
     def __json_parse_false(self, json_string):
         if json_string[:5] != u'false':
             self.error_message = "首字母f是却不是false"
-            self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+            self.logger.error(self.json_string, self.error_message)
             raise ValueError(self.error_message)
         else:
             if len(json_string) < 5:
                 self.error_message = "字面值不足false的长度"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
             json_string = json_string[5:]
             return self.PARSE_OK, json_string, False
@@ -57,12 +56,12 @@ class JsonParser(object):
     def __json_parse_null(self, json_string):
         if json_string[:4] != u'null':
             self.error_message = "首字母n是却不是null"
-            self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+            self.logger.error(self.json_string, self.error_message)
             raise ValueError(self.error_message)
         else:
             if len(json_string) < 4:
                 self.error_message = "字面值不足null的长度"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
             json_string = json_string[4:]
             return self.PARSE_OK, json_string, None
@@ -82,7 +81,7 @@ class JsonParser(object):
         # 并且最后一个字符不能是.
         if json_string[index] == '.':
             self.error_message = "json不支持'num.类型'"
-            self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+            self.logger.error(self.json_string, self.error_message)
             raise ValueError(self.error_message)
         elif json_string[index] in self.valid_number_symbol_behind:
             index += 1
@@ -92,14 +91,14 @@ class JsonParser(object):
                 value = float(json_string[:index])
             except ValueError:
                 self.error_message = "float转换错误"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
         else:
             try:
                 value = int(json_string[:index])
             except ValueError:
                 self.error_message = "int转换错误"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
         if value == (float('inf') or float('-inf')):
             value = u'Infinity'
@@ -120,7 +119,7 @@ class JsonParser(object):
                 if json_string[index+1] == 'u':
                     if string_len - index < 6:
                         self.error_message = "字符串不符合\uxxxx格式"
-                        self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                        self.logger.error(self.json_string, self.error_message)
                         raise ValueError(self.error_message)
                     else:
                         json_string_copy = json_string[:index]
@@ -139,13 +138,13 @@ class JsonParser(object):
             return self.PARSE_OK, json_string, value
         else:
             self.error_message = "传递非法值"
-            self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+            self.logger.error(self.json_string, self.error_message)
             raise ValueError(self.error_message)
 
     def __json_parse_array(self, json_string):
         if json_string == '':
             self.error_message = "找不到下一个]"
-            self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+            self.logger.error(self.json_string, self.error_message)
             raise ValueError(self.error_message)
 
         array_to_parse = []
@@ -157,7 +156,7 @@ class JsonParser(object):
             json_return_status, json_string, value = self.__json_parse_value(json_string)
             if json_string == '':
                 self.error_message = "找不到下一个]"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
             array_to_parse.append(value)
             json_string = json_string.strip()
@@ -168,7 +167,7 @@ class JsonParser(object):
                 return self.PARSE_OK, json_string, array_to_parse
             else:
                 self.error_message = "解析数组时出现错误"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
 
     def __json_parse_object(self, json_string):
@@ -183,12 +182,12 @@ class JsonParser(object):
             json_return_status, json_string, value = self.__json_parse_value(json_string)
             if json_string == '':
                 self.error_message = "找不到下一个}"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
             if side_flag is True:
                 if not isinstance(value, unicode):
                     self.error_message = "key值不是字符串"
-                    self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                    self.logger.error(self.json_string, self.error_message)
                     raise ValueError(self.error_message)
                 dict_key.append(value)
             else:
@@ -206,9 +205,8 @@ class JsonParser(object):
                 side_flag = True
             else:
                 self.error_message = "解析对象时出现错误"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
-
 
     def __json_parse_value(self, json_string):
         # 可能是null
@@ -232,7 +230,7 @@ class JsonParser(object):
             return self.__json_parse_object(json_string)
         else:
             self.error_message = "不认识的开头"
-            self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+            self.logger.error(self.json_string, self.error_message)
             raise ValueError(self.error_message)
 
     def __json_dump_array(self, json_string, array):
@@ -245,60 +243,59 @@ class JsonParser(object):
             elif isinstance(elem, unicode):
                 json_string += elem
             elif isinstance(elem, bool):
-                if elem == True:
+                if elem is True:
                     json_string += 'true'
                 else:
                     json_string += 'false'
-            elif elem == None:
+            elif elem is None:
                 json_string += 'null'
             elif isinstance(elem, float) or isinstance(elem, int):
                 json_string += str(elem)
             else:
                 self.error_message = "__json_dump_array发生错误"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
             if elem != array[-1]:
                 json_string += ', '
-
-
         json_string += ']'
         return json_string
 
     # 对象转字符串
-    def __json_dump_object(self, json_string, object):
+    def __json_dump_object(self, json_string, json_object):
         json_string += '{'
-        counter = len(object)
+        counter = len(json_object)
         if counter is 0:
             json_string += '}'
             return json_string
-        for elem in object:
+        for elem in json_object:
             counter = counter - 1
-            json_string += "{}{}".format(elem,": ")
-            if isinstance(object[elem], list):
-                json_string = self.__json_dump_array(json_string, object[elem])
-            elif isinstance(object[elem], dict):
-                json_string = self.__json_dump_object(json_string, object[elem])
-            elif isinstance(object[elem], unicode):
-                json_string += object[elem]
-            elif isinstance(object[elem], bool):
-                    if object[elem] == True:
+            json_string += "{}{}".format(elem, ": ")
+            if isinstance(json_object[elem], list):
+                json_string = self.__json_dump_array(json_string, json_object[elem])
+            elif isinstance(json_object[elem], dict):
+                json_string = self.__json_dump_object(json_string, json_object[elem])
+            elif isinstance(json_object[elem], unicode):
+                json_string += json_object[elem]
+            elif isinstance(json_object[elem], bool):
+                    if json_object[elem] is True:
                         json_string += 'true'
-                    elif object[elem] == False:
+                    else:
                         json_string += 'false'
-            elif object[elem] == None:
+            elif json_object[elem] is None:
                 json_string += 'null'
             # 不能放在True False前面，可能会吧True判断为int类型
-            elif isinstance(object[elem], float) or isinstance(object[elem],int):
-                json_string += str(object[elem])
+            elif isinstance(json_object[elem], float) or isinstance(json_object[elem], int):
+                json_string += str(json_object[elem])
             else:
                 self.error_message = "__json_dump_object发生错误"
-                self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+                self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
             if counter == 0:
                 json_string += "}"
             else:
                 json_string += ", "
         return json_string
+
     def loads(self, json_string):
         """
         :param json_string: JSON格式数据，S为一个JSON字符串
@@ -307,9 +304,9 @@ class JsonParser(object):
         Python里的浮点数上限的，也抛出异常。JSON的最外层假定为Object
         """
         # 确保输入为str或unicode类型，然后转换为unicode类型
-        if not isinstance(json_string, basestring):
+        if not isinstance(json_string, (str, unicode)):
             self.error_message = "输入类型应该为字符串或Unicode类型"
-            self.logger.error(self.json_string,self.error_message,sys._getframe().f_lineno)
+            self.logger.error(self.json_string, self.error_message)
             raise ValueError(self.error_message)
         elif isinstance(json_string, str):
             json_string = json_string.decode()
@@ -334,8 +331,8 @@ class JsonParser(object):
             json_string += '}'
             return json_string
         for elem in self._data.items():
-            counter = counter - 1
-            json_string += '{}{}'.format(elem[0].decode(),': ')
+            counter -= 1
+            json_string += '{}{}'.format(elem[0].decode(), ': ')
             if isinstance(elem[1], list):
                 json_string = self.__json_dump_array(json_string, elem[1])
             elif isinstance(elem[1], dict):
@@ -343,11 +340,11 @@ class JsonParser(object):
             elif isinstance(elem[1], unicode):
                 json_string += elem[1]
             elif isinstance(elem[1], bool):
-                if elem[1] == True:
+                if elem[1] is True:
                     json_string += 'true'
                 else:
                     json_string += 'false'
-            elif elem[1] == None:
+            elif elem[1] is None:
                 json_string += 'null'
             elif isinstance(elem[1], float) or isinstance(elem[1], int):
                 json_string += str(elem[1])
@@ -364,9 +361,9 @@ class JsonParser(object):
         从文件中读取JSON格式数据
         文件操作失败抛出异常，异常处理和loads函数相同
         """
-        with open(f, 'r') as file:
-            text = file.read()
-        self.loads(text)
+        with open(f, 'r') as json_file:
+            json_text = json_file.read()
+        self.loads(json_text)
 
     def dump_file(self, f):
         """
@@ -376,8 +373,8 @@ class JsonParser(object):
         文件若存在则覆盖，
         文件操作失败抛出异常
         """
-        with open(f, 'w') as file:
-            file.write(self.dumps())
+        with open(f, 'w') as json_file:
+            json_file.write(self.dumps())
 
     def load_dict(self, d):
         """
@@ -386,7 +383,7 @@ class JsonParser(object):
         将dict中读取数据存入实例中，若遇到不是字符串的key则忽略
         """
         for elem in d:
-            if isinstance(elem, basestring):
+            if isinstance(elem, (str, unicode)):
                 self._data[elem] = d[elem]
 
     def dump_dict(self):
@@ -414,7 +411,7 @@ class JsonParser(object):
         """
         self._data[key] = value
 
-    def update(self,d):
+    def update(self, d):
         """
         :param d: 新加入字典数据
         :return: 无返回值
@@ -423,4 +420,3 @@ class JsonParser(object):
         for key in d:
             if key not in self._data:
                 self._data[key] = d[key]
-
