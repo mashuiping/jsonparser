@@ -39,6 +39,11 @@ class JsonParser(object):
         self.stack = []
 
     def __json_parse_true(self, json_string):
+        """
+        :param json_string: 当前json类型字符串
+        :return: 返回转换状态，当前json类型字符串，提取到的值
+        解析并提取字面值true
+        """
         if json_string[:4] != u'true':
             self.error_message = "首字母t的字面量是却不是true"
             self.logger.error(self.json_string, self.error_message)
@@ -52,6 +57,11 @@ class JsonParser(object):
             return self.PARSE_OK, json_string, True
 
     def __json_parse_false(self, json_string):
+        """
+        :param json_string: 当前json类型字符串
+        :return: 返回转换状态，当前json类型字符串，提取到的值
+        解析并提取字面值false
+        """
         if json_string[:5] != u'false':
             self.error_message = "首字母f是却不是false"
             self.logger.error(self.json_string, self.error_message)
@@ -65,6 +75,11 @@ class JsonParser(object):
             return self.PARSE_OK, json_string, False
 
     def __json_parse_null(self, json_string):
+        """
+        :param json_string: 当前json类型字符串
+        :return: 返回转换状态，当前json类型字符串，提取到的值
+        解析并提取字面值null
+        """
         if json_string[:4] != u'null':
             self.error_message = "首字母n是却不是null"
             self.logger.error(self.json_string, self.error_message)
@@ -78,8 +93,12 @@ class JsonParser(object):
             return self.PARSE_OK, json_string, None
 
     def __json_parse_number(self, json_string):
+        """
+        :param json_string: 当前字符串的值
+        :return: 返回转换状态，当前json类型字符串，提取到的值
+        解析并提取数字值
+        """
         isfloat_flag = False
-
         index = 0
         for index, elem in enumerate(json_string):
             if elem in self.float_symbol:
@@ -117,16 +136,32 @@ class JsonParser(object):
         return self.PARSE_OK, json_string, value
 
     def __json_parse_string(self, json_string):
+        """
+        :param json_string: 当前字符串的值
+        :return: 返回转换状态，当前json类型字符串，提取到的值
+        解析并提取字符串值，注意转移字符串的转换
+        解析思路：
+            确立字符串右边界，即找到一个没有被转义的双引号
+            如果连续偶数（包括0个）个反斜杠跟随双引号，那么
+            这个双引用没有被转义，是右边界
+        """
         is_valid_string = False
-        valid_escape_symbol = ('"', '\\', '/', 'b', 'f', 'n', 'r', 't')
-        index = 0
+        # 从第二个位置开始寻找匹配的双引号
+        index = 1
+        # 用escape_counter计算双引号后面连续反斜杠的个数
+        # 偶数表示双引号没有被转义， 也就是字符串的结尾
+        escape_counter = 0
         string_len = len(json_string)
         # 寻找第二个引号(能进到这个函数说明第一个引号就在第一个位置)，即找到字符串的结尾位置
-        for index in range(1, string_len):
-            if json_string[index] == '"' and json_string[index-1] != '\\':
-                is_valid_string = True
-                break
+        while index < string_len:
+            if json_string[index] == '"':
+                if escape_counter % 2 is 0:
+                    is_valid_string = True
+                    break
+                else:
+                    escape_counter = 0
             elif json_string[index] == '\\':
+                escape_counter += 1
                 if json_string[index+1] == 'u':
                     if string_len - index < 6:
                         self.error_message = "字符串不符合\uxxxx格式"
@@ -134,14 +169,19 @@ class JsonParser(object):
                         raise ValueError(self.error_message)
                     else:
                         json_string_copy = json_string[:index]
-                        json_string_copy += json_string[index:index+6].decode()
+                        try:
+                            json_string_copy += json_string[index:index+6].decode()
+                        except UnicodeDecodeError:
+                            raise UnicodeDecodeError("字符串解码错误")
                         json_string = json_string_copy + json_string[index+6:]
-                        # json_string[index+4:] = json_string[index+6:]
+                    # 跳过5个字符 或者直接+6后 continue
                     index += 5
-                elif json_string[index+1] in valid_escape_symbol:
-                    index += 1
                 else:
+                    index += 1
                     continue
+            else:
+                escape_counter = 0
+            index += 1
 
         if is_valid_string is True:
             value = json_string[:index+1]
