@@ -1,8 +1,9 @@
 # coding: utf-8
-import unittest
 # json库用于测试对比生成数据的正确性
 import json
-from JsonParser import jsonparser
+import unittest
+
+import jsonparser
 
 
 class MyTestCase(unittest.TestCase):
@@ -24,7 +25,7 @@ class MyTestCase(unittest.TestCase):
             ('{ "a" : 123    	}', 1),
             ('{"true": "null"}', 1),
             ('{"":"\\t\\n"}', 1),
-            ('{"\\"":"\\""}', 1),
+            ('{"\\"":"\\""}', 1)
         ]
         self.json_ok2 = [
             ('{"a":' + '1' * 310 + '.0' + '}', 2),
@@ -33,12 +34,9 @@ class MyTestCase(unittest.TestCase):
             ('{"a": {"a": {"a": 123}}}', 2),
             ('{"a": {"a": {"a": [1,2,[3]]}}}', 2),
             ('{"a": "\\u7f51\\u6613CC\\"\'"}', 3),
-
-            # 字典排列顺序不同，倒置变成字符串后测试不通过
-            # 尚未了结dict中排序原理，还无法解释
-            # ('{"d{": "}dd", "a":123}', 2),
-            # ('{"a":1e-1, "cc": -123.4}', 2),
-            # ('{ "{ab" : "}123", "\\\\a[": "]\\\\"}', 3),
+            ('{"d{": "}dd", "a":123}', 2),
+            ('{"a":1e-1, "cc": -123.4}', 2),
+            ('{ "{ab" : "}123", "\\\\a[": "]\\\\"}', 3),
         ]
         self.json_ex = [
             # exceptions
@@ -161,6 +159,7 @@ class MyTestCase(unittest.TestCase):
     def test_object(self):
         # 能通过测试的样例
         self.test_func_loads('{"":""}')
+        self.test_func_loads('{\"a\":""}')
         self.test_func_loads('{"a":true}')
         self.test_func_loads('{"a" :[]}')
         self.test_func_loads('{"a": false}')
@@ -170,6 +169,8 @@ class MyTestCase(unittest.TestCase):
         self.test_func_loads('{"a":[1,2,[3]]}')
         self.test_func_loads('{"a": {"a": {"a": [1,2,[3]]}}}')
         self.test_func_loads('{"a":1e-1}')
+        self.test_func_loads("{\"a\":1e-1}")
+
         # 会引发异常的样例
         with self.assertRaises(ValueError):
             self.test_func_loads('{"a":"\\"}')
@@ -204,10 +205,12 @@ class MyTestCase(unittest.TestCase):
         for elem in self.json_ok:
             for index in range(0, elem[1]):
                 my_jsonparser.loads(elem[0])
+                self.assertEqual(my_jsonparser._data, json.loads(elem[0]))
                 self.assertEqual(my_jsonparser.dumps(), json.dumps(json.loads(elem[0])))
         for elem in self.json_ok2:
             for index in range(0, elem[1]):
                 my_jsonparser.loads(elem[0])
+                self.assertEqual(my_jsonparser._data, json.loads(elem[0]))
                 self.assertEqual(my_jsonparser.dumps(), json.dumps(json.loads(elem[0])))
                 # 会引发异常的样例, 能loads成功一般就不会有异常了
 
@@ -243,7 +246,7 @@ class MyTestCase(unittest.TestCase):
         new_dict = {"python": ["c++", "c", "java"], "English": ["Math", "Coding"], "bigberg": "这个将不会加入"}
         my_jsonparser.update(new_dict)
         self.assertEqual(my_jsonparser.dump_dict(), {'python': ['c++', 'c', 'java'],
-                                                     'bigberg': '[hello world]',
+                                                    'bigberg': '[hello world]',
                                                      'English': ['Math', 'Coding']})
 
 

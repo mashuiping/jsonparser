@@ -130,8 +130,7 @@ class JsonParser(object):
                 self.error_message = "int转换错误"
                 self.logger.error(self.json_string, self.error_message)
                 raise ValueError(self.error_message)
-        if value == (float('inf') or float('-inf')):
-            value = u'Infinity'
+
         json_string = json_string[index:]
         return self.PARSE_OK, json_string, value
 
@@ -139,58 +138,56 @@ class JsonParser(object):
         """
         :param json_string: 当前字符串的值
         :return: 返回转换状态，当前json类型字符串，提取到的值
-        解析并提取字符串值，注意转移字符串的转换
-        解析思路：
-            确立字符串右边界，即找到一个没有被转义的双引号
-            如果连续偶数（包括0个）个反斜杠跟随双引号，那么
-            这个双引用没有被转义，是右边界
         """
-        is_valid_string = False
-        # 从第二个位置开始寻找匹配的双引号
-        index = 1
-        # 用escape_counter计算双引号后面连续反斜杠的个数
-        # 偶数表示双引号没有被转义， 也就是字符串的结尾
-        escape_counter = 0
         string_len = len(json_string)
-        # 寻找第二个引号(能进到这个函数说明第一个引号就在第一个位置)，即找到字符串的结尾位置
+        index = 1
+        value = u''
+
         while index < string_len:
+
             if json_string[index] == '"':
-                if escape_counter % 2 is 0:
-                    is_valid_string = True
-                    break
-                else:
-                    escape_counter = 0
+                break
+
             elif json_string[index] == '\\':
-                escape_counter += 1
-                if json_string[index+1] == 'u':
+                if json_string[index+1] == u't':
+                    value += '\t'
+                elif json_string[index+1] == '\"':
+                    value += '\"'
+                elif json_string[index+1] == '\\':
+                    value += '\\'
+                elif json_string[index+1] == '\/':
+                    value += '\/'
+                elif json_string[index+1] == '\b':
+                    value += '\b'
+                elif json_string[index+1] == '\f':
+                    value += '\f'
+                elif json_string[index+1] == u'n':
+                    value += '\n'
+                elif json_string[index+1] == '\r':
+                    value += '\r'
+                elif json_string[index+1] == 'u':
                     if string_len - index < 6:
                         self.error_message = "字符串不符合\uxxxx格式"
                         self.logger.error(self.json_string, self.error_message)
                         raise ValueError(self.error_message)
                     else:
-                        json_string_copy = json_string[:index]
                         try:
-                            json_string_copy += json_string[index:index+6].decode()
+                            value += json_string[index:index+6].decode('unicode-escape')
                         except UnicodeDecodeError:
                             raise UnicodeDecodeError("字符串解码错误")
-                        json_string = json_string_copy + json_string[index+6:]
-                    # 跳过5个字符 或者直接+6后 continue
-                    index += 5
+                        index += 6
+                        continue
                 else:
-                    index += 1
-                    continue
+                    raise ValueError(self.error_message)
+
+                index += 2
+                continue
             else:
-                escape_counter = 0
+                value += json_string[index]
+
             index += 1
 
-        if is_valid_string is True:
-            value = json_string[:index+1]
-            json_string = json_string[index+1:]
-            return self.PARSE_OK, json_string, value
-        else:
-            self.error_message = "传递非法值"
-            self.logger.error(self.json_string, self.error_message)
-            raise ValueError(self.error_message)
+        return self.PARSE_OK, json_string[index+1:], value
 
     def __json_parse_array(self, json_string):
         """
@@ -344,7 +341,7 @@ class JsonParser(object):
             elif isinstance(elem, list):
                 json_string = self.__json_dump_array(json_string, elem)
             elif isinstance(elem, unicode):
-                json_string += elem
+                json_string = self.__json_dump_string(json_string, elem)
             elif isinstance(elem, bool):
                 if elem is True:
                     json_string += 'true'
@@ -376,13 +373,13 @@ class JsonParser(object):
             return json_string
         for elem in json_object:
             counter = counter - 1
-            json_string += "{}{}".format(elem, ": ")
+            json_string += "{}{}{}{}".format("\"", elem, "\"", ": ")
             if isinstance(json_object[elem], list):
                 json_string = self.__json_dump_array(json_string, json_object[elem])
             elif isinstance(json_object[elem], dict):
                 json_string = self.__json_dump_object(json_string, json_object[elem])
             elif isinstance(json_object[elem], unicode):
-                json_string += json_object[elem]
+                json_string = self.__json_dump_string(json_string, elem)
             elif isinstance(json_object[elem], bool):
                     if json_object[elem] is True:
                         json_string += 'true'
@@ -412,17 +409,16 @@ class JsonParser(object):
         """
         # 确保输入为str或unicode类型，然后转换为unicode类型
         # 初始化loads函数
+        self._data = {}
         self.stack = []
         if not isinstance(json_string, (str, unicode)):
-            self.error_message = "输入类型应该为字符串或Unicode类型"
-            self.logger.error(self.json_string, self.error_message)
+            error_message = "输入类型应该为字符串或Unicode类型"
+            self.logger.error(json_string, error_message)
             raise ValueError(self.error_message)
         elif isinstance(json_string, str):
             json_string = json_string.decode()
         json_string_copy = ""
-        self.json_string = ""
         for element in json_string:
-            self.json_string += element
             json_string_copy += element
         json_string_copy = json_string_copy.strip()
         parse_status, json_string_copy, value = self.__json_parse_value(json_string_copy)
@@ -430,7 +426,7 @@ class JsonParser(object):
             self.error_message = "括号{}不匹配".format(self.stack.pop())
             self.logger.error(self.json_string, self.error_message)
             raise ValueError(self.error_message)
-        self.logger.debug(self.json_string, value)
+        self.logger.debug(json_string, value)
         self._data = value
 
     def dumps(self):
@@ -445,7 +441,7 @@ class JsonParser(object):
             return json_string
         for elem in self._data.items():
             counter -= 1
-            json_string += '{}{}'.format(elem[0].decode(), ': ')
+            json_string = self.__json_dump_string(json_string, elem[0]) + u": "
             if isinstance(elem[1], list):
                 self.stack.append('[')
                 json_string = self.__json_dump_array(json_string, elem[1])
@@ -453,7 +449,7 @@ class JsonParser(object):
                 self.stack.append('{')
                 json_string = self.__json_dump_object(json_string, elem[1])
             elif isinstance(elem[1], (unicode, str)):
-                json_string += elem[1]
+                json_string = self.__json_dump_string(json_string, elem[1])
             elif isinstance(elem[1], bool):
                 if elem[1] is True:
                     json_string += 'true'
@@ -462,12 +458,40 @@ class JsonParser(object):
             elif elem[1] is None:
                 json_string += 'null'
             elif isinstance(elem[1], float) or isinstance(elem[1], int):
-                json_string += str(elem[1])
+                if elem[1] == float('inf'):
+                    json_string += 'Infinity'
+                else:
+                    json_string += str(elem[1])
             if counter == 0:
                 json_string += '}'
             else:
                 json_string += ', '
         return json_string
+
+    def __json_dump_string(self, json_string, string):
+        json_string_copy = u"{}{}".format(json_string, u"\"")
+        for index, elem in enumerate(string):
+            elem = elem.encode('unicode-escape')
+            if elem == '\t':
+                json_string_copy += '\\t'
+            elif elem == '\n':
+                json_string_copy += '\\n'
+            elif elem == '\\':
+                json_string_copy += '\\\\'
+            elif elem == '\"':
+                json_string_copy += '\\\"'
+            elif elem == '\b':
+                json_string_copy += '\\\b'
+            elif elem == '\f':
+                json_string_copy += '\\\f'
+            elif elem == '\r':
+                json_string_copy += '\\\r'
+            else:
+                json_string_copy += elem
+
+        json_string_copy = u"{}{}".format(json_string_copy, u"\"")
+        return json_string_copy
+
 
     def load_file(self, f):
         """
@@ -506,8 +530,7 @@ class JsonParser(object):
         :return: 字典，包含实例中的内容
         返回一个字典，包含实例中的内容
         """
-        new_data = dict.copy(self._data)
-        return new_data
+        return self.deepcopy_value(self._data)
 
     def __getitem__(self, item):
         """
@@ -524,7 +547,7 @@ class JsonParser(object):
         :return: 无返回值
         给字典添加键值为key的值value
         """
-        self._data[key] = value
+        self._data[key] = self.deepcopy_value(value)
 
     def update(self, d):
         """
@@ -534,4 +557,22 @@ class JsonParser(object):
         """
         for key in d:
             if key not in self._data:
-                self._data[key] = d[key]
+                self._data[key] = self.deepcopy_value(d[key])
+
+    # 以下实现深拷贝
+    def deepcopy_array(self, array):
+        return [self.deepcopy_value(elem) for elem in array]
+
+    def deepcopy_object(self, object):
+        ret = {}
+        for elem in object:
+            ret[elem] = self.deepcopy_value(object[elem])
+        return ret
+
+    def deepcopy_value(self, value):
+        if isinstance(value, dict):
+            return self.deepcopy_object(value)
+        elif isinstance(value, list):
+            return self.deepcopy_array(value)
+        else:
+            return value
